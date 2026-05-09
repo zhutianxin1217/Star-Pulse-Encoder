@@ -59,11 +59,13 @@ DOCTYPE html>
             });
             ctx.stroke();
         }
-        drawStar();
-    </script>
-</body><!
-</html>
-// 在代码最下面添加，让星图旋转起来
+        drawStar(// --- 增强发光视觉 ---
+ctx.shadowBlur = 15 + Math.sin(Date.now() / 500) * 5; // 随时间产生呼吸感的光晕
+ctx.shadowColor = '#00f2ff';
+ctx.strokeStyle = 'rgba(0, 242, 255, 0.8)';
+ctx.lineWidth = 2; // 线条加粗一点点
+);
+        // 在代码最下面添加，让星图旋转起来
 let rotation = 0;
 function animate() {
     rotation += 0.002;
@@ -71,4 +73,6 @@ function animate() {
     requestAnimationFrame(animate);
 }
 animate();
-
+    </script>
+</body><!
+</html>
