@@ -1,78 +1,152 @@
-DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html lang="zh">
 <head>
-    <title>Star-Pulse Encoder</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star-Pulse Encoder | 宇宙星图编码器</title>
     <style>
-        body { background: #0a0a1a; color: #00f2ff; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        canvas { border: 1px solid #00f2ff; box-shadow: 0 0 20px #00f2ff; background: #000; border-radius: 50%; }
-        input { background: transparent; border: 1px solid #00f2ff; color: #00f2ff; padding: 10px; width: 300px; margin-top: 20px; text-align: center; }
+        /* 核心样式：打造深空科幻感 */
+        body { 
+            background: #050510; color: #00f2ff; font-family: 'Courier New', monospace; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            min-height: 100vh; margin: 0; overflow: hidden;
+        }
+        .container { text-align: center; z-index: 10; }
+        
+        /* 画布样式：增加发光感 */
+        canvas { 
+            background: radial-gradient(circle, #101025 0%, #050510 100%);
+            border-radius: 50%; box-shadow: 0 0 50px rgba(0, 242, 255, 0.2);
+            cursor: crosshair; transition: transform 0.1s linear;
+        }
+
+        /* 输入框样式：黑客风格动画 */
+        input { 
+            background: rgba(0, 242, 255, 0.05); border: 1px solid #00f2ff; 
+            color: #00f2ff; padding: 12px 20px; width: 320px; margin-top: 30px; 
+            text-align: center; font-size: 1.1em; outline: none; border-radius: 20px;
+            letter-spacing: 2px;
+            animation: border-glow 3s infinite alternate;
+        }
+
+        /* 按钮样式 */
+        button {
+            background: transparent; border: 1px solid rgba(0, 242, 255, 0.5);
+            color: rgba(0, 242, 255, 0.7); padding: 8px 15px; margin-top: 20px;
+            cursor: pointer; border-radius: 5px; font-family: monospace;
+            transition: all 0.3s;
+        }
+        button:hover { background: rgba(0, 242, 255, 0.2); color: #fff; }
+
+        @keyframes border-glow {
+            from { border-color: #00f2ff; box-shadow: 0 0 5px #00f2ff; }
+            to { border-color: #ffffff; box-shadow: 0 0 15px #ffffff; }
+        }
+
+        p { color: rgba(0, 242, 255, 0.5); font-size: 0.8em; margin-top: 15px; }
     </style>
 </head>
 <body>
-    <h2>STAR-PULSE ENCODER</h2>
-    <canvas id="starCanvas" width="500" height="500"></canvas>
-    <input type="text" id="userInput" placeholder="输入文字，生成星图..." oninput="drawStar()">
+
+    <div class="container">
+        <h1 style="letter-spacing: 8px; margin-bottom: 5px;">STAR-PULSE</h1>
+        <div style="font-size: 0.7em; letter-spacing: 3px; margin-bottom: 25px; opacity: 0.8;">BEYOND LANGUAGE PROTOCOL</div>
+        
+        <canvas id="starCanvas" width="600" height="600"></canvas><br>
+        
+        <input type="text" id="userInput" placeholder="ENCODE MESSAGE..." autocomplete="off">
+        <br>
+        <button onclick="saveChart()">SAVE STAR CHART</button>
+        <p>© UNIVERSAL COMMUNICATION TERMINAL</p>
+    </div>
 
     <script>
         const canvas = document.getElementById('starCanvas');
         const ctx = canvas.getContext('2d');
+        const input = document.getElementById('userInput');
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
+        let rotationAngle = 0;
 
         function drawStar() {
-            const text = document.getElementById('userInput').value.toUpperCase();
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const text = input.value.toUpperCase().replace(/[^A-Z ]/g, "");
             
-            // 绘制基础背景圆环
+            // 1. 清除画布并绘制宇宙背景噪声
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+            for (let i = 0; i < 40; i++) {
+                let px = (Math.sin(i * 4321) * 0.5 + 0.5) * canvas.width;
+                let py = (Math.cos(i * 1234) * 0.5 + 0.5) * canvas.height;
+                ctx.fillRect(px, py, 1, 1);
+            }
+            
+            // 2. 绘制基础坐标环
+            ctx.setLineDash([2, 10]);
             ctx.strokeStyle = 'rgba(0, 242, 255, 0.1)';
-            for(let i=1; i<=5; i++) {
+            for(let i=1; i<=6; i++) {
                 ctx.beginPath();
-                ctx.arc(centerX, centerY, i * 40, 0, Math.PI * 2);
+                ctx.arc(centerX, centerY, i * 45, 0, Math.PI * 2);
                 ctx.stroke();
             }
+            ctx.setLineDash([]);
 
             if (!text) return;
 
-            ctx.strokeStyle = '#00f2ff';
-            ctx.fillStyle = '#00f2ff';
-            ctx.beginPath();
+            // 3. 增强视觉样式：设置呼吸发光效果
+            // shadowBlur 随时间波动 (Date.now())
+            ctx.shadowBlur = 12 + Math.sin(Date.now() / 400) * 6;
+            ctx.shadowColor = '#00f2ff';
+            ctx.strokeStyle = 'rgba(0, 242, 255, 0.8)';
+            ctx.lineWidth = 2;
 
-            const words = text.split(' ');
+            const words = text.split(' ').filter(w => w.length > 0);
             words.forEach((word, wordIdx) => {
-                const radius = 60 + (wordIdx * 40); // 每个词一层环
+                const radius = 80 + (wordIdx * 45); 
+                ctx.beginPath();
                 
                 for (let i = 0; i < word.length; i++) {
-                    const charCode = word.charCodeAt(i) - 65; // A=0, B=1...
-                    if (charCode < 0 || charCode > 25) continue;
-
+                    const charCode = word.charCodeAt(i) - 65;
                     const angle = (charCode / 26) * Math.PI * 2 - Math.PI / 2;
                     const x = centerX + radius * Math.cos(angle);
                     const y = centerY + radius * Math.sin(angle);
 
-                    // 连线逻辑
                     if (i === 0) ctx.moveTo(x, y);
                     else ctx.lineTo(x, y);
 
-                    // 画个闪亮的小点
-                    ctx.fillRect(x-2, y-2, 4, 4);
+                    // 绘制字母星点
+                    ctx.fillStyle = '#fff';
+                    ctx.save();
+                    ctx.shadowBlur = 10;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
                 }
+                ctx.stroke();
             });
-            ctx.stroke();
         }
-        drawStar(// --- 增强发光视觉 ---
-ctx.shadowBlur = 15 + Math.sin(Date.now() / 500) * 5; // 随时间产生呼吸感的光晕
-ctx.shadowColor = '#00f2ff';
-ctx.strokeStyle = 'rgba(0, 242, 255, 0.8)';
-ctx.lineWidth = 2; // 线条加粗一点点
-);
-        // 在代码最下面添加，让星图旋转起来
-let rotation = 0;
-function animate() {
-    rotation += 0.002;
-    canvas.style.transform = `rotate(${rotation}rad)`;
-    requestAnimationFrame(animate);
-}
-animate();
+
+        // 4. 动画循环：处理旋转和实时刷新
+        function animate() {
+            rotationAngle += 0.0015; // 旋转速度
+            canvas.style.transform = `rotate(${rotationAngle}rad)`;
+            
+            drawStar(); // 每一帧重新绘制，以实现“呼吸灯”效果
+            
+            requestAnimationFrame(animate);
+        }
+
+        // 5. 保存功能
+        function saveChart() {
+            const link = document.createElement('a');
+            link.download = 'star-chart.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        // 启动动画
+        animate();
     </script>
-</body><!
+</body>
 </html>
+
