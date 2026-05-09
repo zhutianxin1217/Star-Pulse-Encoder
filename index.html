@@ -1,0 +1,65 @@
+DOCTYPE html>
+<html>
+<head>
+    <title>Star-Pulse Encoder</title>
+    <style>
+        body { background: #0a0a1a; color: #00f2ff; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        canvas { border: 1px solid #00f2ff; box-shadow: 0 0 20px #00f2ff; background: #000; border-radius: 50%; }
+        input { background: transparent; border: 1px solid #00f2ff; color: #00f2ff; padding: 10px; width: 300px; margin-top: 20px; text-align: center; }
+    </style>
+</head>
+<body>
+    <h2>STAR-PULSE ENCODER</h2>
+    <canvas id="starCanvas" width="500" height="500"></canvas>
+    <input type="text" id="userInput" placeholder="输入文字，生成星图..." oninput="drawStar()">
+
+    <script>
+        const canvas = document.getElementById('starCanvas');
+        const ctx = canvas.getContext('2d');
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+
+        function drawStar() {
+            const text = document.getElementById('userInput').value.toUpperCase();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 绘制基础背景圆环
+            ctx.strokeStyle = 'rgba(0, 242, 255, 0.1)';
+            for(let i=1; i<=5; i++) {
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, i * 40, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+
+            if (!text) return;
+
+            ctx.strokeStyle = '#00f2ff';
+            ctx.fillStyle = '#00f2ff';
+            ctx.beginPath();
+
+            const words = text.split(' ');
+            words.forEach((word, wordIdx) => {
+                const radius = 60 + (wordIdx * 40); // 每个词一层环
+                
+                for (let i = 0; i < word.length; i++) {
+                    const charCode = word.charCodeAt(i) - 65; // A=0, B=1...
+                    if (charCode < 0 || charCode > 25) continue;
+
+                    const angle = (charCode / 26) * Math.PI * 2 - Math.PI / 2;
+                    const x = centerX + radius * Math.cos(angle);
+                    const y = centerY + radius * Math.sin(angle);
+
+                    // 连线逻辑
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+
+                    // 画个闪亮的小点
+                    ctx.fillRect(x-2, y-2, 4, 4);
+                }
+            });
+            ctx.stroke();
+        }
+        drawStar();
+    </script>
+</body><!
+</html>
